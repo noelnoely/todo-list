@@ -16,39 +16,45 @@ public class TodoRepository : ITodoRepository
 
     public async Task AddAsync(Todo todo)
     {
-        await _dbContext.Todo.AddAsync(todo);
+        await _dbContext.Todos.AddAsync(todo);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<Todo>> GetByTodoListIdAsync(int todoListId)
     {
         return await _dbContext
-            .Todo
-            .Where(x => x.TodoListId == todoListId)
+            .Todos
+            .AsNoTracking()
+            .Where(todo => todo.TodoListId == todoListId)
             .ToListAsync();
     }
 
     public async Task<Todo?> GetByIdAsync(int id)
     {
-        return await _dbContext.Todo.FirstOrDefaultAsync(x => x.Id == id);
+        return await _dbContext
+            .Todos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(todo => todo.Id == id);
     }
 
     public async Task<IReadOnlyList<Todo>> GetActiveByTodoListIdAsync(int todoListId)
     {
         return await _dbContext
-            .Todo
-            .Where(x => x.TodoListId == todoListId && x.Active)
+            .Todos
+            .AsNoTracking()
+            .Where(todo => todo.TodoListId == todoListId && todo.Active)
             .ToListAsync();
     }
 
-    public Task UpdateAsync(Todo todo)
+    public async Task UpdateAsync(Todo todo)
     {
-        _dbContext.Todo.Update(todo);
-        return Task.CompletedTask;
+        _dbContext.Todos.Update(todo);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(Todo todo)
+    public async Task DeleteAsync(Todo todo)
     {
-        _dbContext.Todo.Remove(todo);
-        return Task.CompletedTask;
+        _dbContext.Todos.Remove(todo);
+        await _dbContext.SaveChangesAsync();
     }
 }
