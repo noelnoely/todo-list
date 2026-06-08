@@ -16,28 +16,43 @@ public class TodoListRepository : ITodoListRepository
 
     public async Task AddAsync(TodoList todoList)
     {
-        await _dbContext.TodoList.AddAsync(todoList);
+        await _dbContext.TodoLists.AddAsync(todoList);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<TodoList>> GetAllAsync()
     {
-        return await _dbContext.TodoList.ToListAsync();
+        return await _dbContext
+            .TodoLists
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<TodoList?> GetByIdAsync(int id)
     {
-        return await _dbContext.TodoList.FirstOrDefaultAsync(x => x.Id == id);
+        return await _dbContext
+            .TodoLists
+            .AsNoTracking()
+            .FirstOrDefaultAsync(todoList => todoList.Id == id);
     }
 
-    public Task UpdateAsync(TodoList todoList)
+    public async Task UpdateAsync(TodoList todoList)
     {
-        _dbContext.TodoList.Update(todoList);
-        return Task.CompletedTask;
+        _dbContext.TodoLists.Update(todoList);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(TodoList todoList)
+    public async Task DeleteAsync(TodoList todoList)
     {
-        _dbContext.TodoList.Remove(todoList);
-        return Task.CompletedTask;
+        _dbContext.TodoLists.Remove(todoList);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _dbContext
+            .TodoLists
+            .AsNoTracking()
+            .AnyAsync(todoList => todoList.Id == id);
     }
 }

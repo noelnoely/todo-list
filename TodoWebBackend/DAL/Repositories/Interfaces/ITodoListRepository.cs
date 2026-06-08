@@ -16,4 +16,6 @@ public interface ITodoListRepository
 
     // Delete:
     Task DeleteAsync(TodoList todoList);
+
+    Task<bool> ExistsAsync(int id);
 }
