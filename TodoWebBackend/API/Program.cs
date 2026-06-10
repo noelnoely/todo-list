@@ -14,6 +14,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddOpenApi();
 builder.Services.AddDataAccessLayer(connectionString);
 builder.Services.AddBusinessLogicLayer();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -24,5 +25,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.MapControllers();
 app.Run();
