@@ -1,5 +1,6 @@
 using BLL.Dtos.Todo;
 using BLL.Services.Interfaces;
+using BLL.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -9,15 +10,26 @@ namespace API.Controllers;
 public class TodosController : ControllerBase
 {
     private readonly ITodoService _todoService;
+    private readonly IValidator<CreateTodoDto> _createValidator;
+    private readonly IValidator<UpdateTodoDto> _updateValidator;
 
-    public TodosController(ITodoService todoService)
+    public TodosController(ITodoService todoService, IValidator<CreateTodoDto> createValidator,
+        IValidator<UpdateTodoDto> updateValidator)
     {
         _todoService = todoService;
+        _createValidator = createValidator;
+        _updateValidator = updateValidator;
     }
 
     [HttpPost("/api/todo-lists/{todoListId}/todos")]
     public async Task<IActionResult> Create([FromRoute] int todoListId, [FromBody] CreateTodoDto todoDto)
     {
+        var validationResult = _createValidator.Validate(todoDto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
         var id = await _todoService.CreateAsync(todoListId, todoDto);
         if (id == null)
         {
@@ -58,8 +70,14 @@ public class TodosController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] int id, UpdateTodoDto todoDto)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTodoDto todoDto)
     {
+        var validationResult = _updateValidator.Validate(todoDto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
         var isUpdated = await _todoService.UpdateAsync(id, todoDto);
         if (!isUpdated)
         {
