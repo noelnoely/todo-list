@@ -5,14 +5,14 @@ namespace BLL.Mappers;
 
 public static class TodoMapper
 {
-    public static Todo ToEntity(this CreateTodoDto dto)
+    public static Todo ToEntity(this CreateTodoDto dto, int todoListId)
     {
         return new Todo
         {
-            Name = dto.Name,
-            Description = dto.Description,
-            TodoListId = dto.TodoListId,
+            Name = dto.Name.Trim(),
+            Description = dto.Description?.Trim(),
             Active = true,
+            TodoListId = todoListId,
         };
     }
 

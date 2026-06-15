@@ -16,7 +16,6 @@ public class TodoListService : ITodoListService
 
     public async Task<int> CreateAsync(CreateTodoListDto todoListDto)
     {
-        todoListDto.Name = todoListDto.Name.Trim();
         var entity = todoListDto.ToEntity();
         await _repository.AddAsync(entity);
         return entity.Id;

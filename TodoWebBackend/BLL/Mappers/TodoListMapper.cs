@@ -9,7 +9,7 @@ public static class TodoListMapper
     {
         return new TodoList
         {
-            Name = dto.Name,
+            Name = dto.Name.Trim(),
         };
     }
 
