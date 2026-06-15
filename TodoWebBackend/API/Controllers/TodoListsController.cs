@@ -21,7 +21,11 @@ public class TodoListsController : ControllerBase
     {
         var id = await _todoListService.CreateAsync(todoListDto);
 
-        return CreatedAtAction(nameof(GetById), new { id = id, }, id);
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = id, },
+            id
+        );
     }
 
     [HttpGet]

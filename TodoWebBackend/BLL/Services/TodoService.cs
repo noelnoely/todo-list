@@ -16,15 +16,15 @@ public class TodoService : ITodoService
         _todoListRepository = todoListRepository;
     }
 
-    public async Task<int?> CreateAsync(CreateTodoDto todoDto)
+    public async Task<int?> CreateAsync(int todoListId, CreateTodoDto todoDto)
     {
-        var todoListExists = await _todoListRepository.ExistsAsync(todoDto.TodoListId);
+        var todoListExists = await _todoListRepository.ExistsAsync(todoListId);
         if (!todoListExists)
         {
             return null;
         }
 
-        var entity = todoDto.ToEntity();
+        var entity = todoDto.ToEntity(todoListId);
         await _todoRepository.AddAsync(entity);
         return entity.Id;
     }
